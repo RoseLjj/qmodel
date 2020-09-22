@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,45 +8,52 @@
   <script src="js/jszip-utils.js"></script>
   <script src="js/jszip.min.js"></script>
 </head>
+
 <body>
   <script>
-    var url = 'model/5d-0.gz'
+    // var h = 'model/5d-0.gz'
     // var a = new JSZip(h)
-    JSZipUtils.getBinaryContent(url, {
-    callback: function (g, h) {
-      var a = new JSZip(h),
-        d = a.file(c.s + '.json')
-      g && postMessage({ error: !0, data: c })
-      var d = JSON.parse(d.asText()),
-        b = a.file(c.s + '-position.bin')
-        console.log('workers', g, h)
-      if (b) {
-        var b = b._data.getContent(),
-          b = new Float32Array(b.buffer),
-          e = a.file(c.s + '-normal.bin')._data.getContent(),
-          e = new Float32Array(e.buffer),
-          f = a.file(c.s + '-color.bin')._data.getContent(),
-          f = new Float32Array(f.buffer),
-          a = a.file(c.s + '-uv.bin')._data.getContent(),
-          a = new Float32Array(a.buffer)
-        postMessage({ list: d.list, position: b, normal: e, color: f, uv: a }, [
-          b.buffer,
-          e.buffer,
-          f.buffer,
-          a.buffer,
-        ])
-      } else
-        (a = new Float32Array(d.position)),
-          (b = new Float32Array(d.normal)),
-          (e = new Float32Array(d.color)),
-          (f = new Float32Array(d.uv)),
-          postMessage(
-            { list: d.list, position: a, normal: b, color: e, uv: f },
-            [a.buffer, b.buffer, e.buffer, f.buffer]
-          )
-    },
-  })
     // console.log(a)
+    var url = 'model/5d-0.gz'
+    JSZipUtils.getBinaryContent(url, {
+      callback: function (g, h) {
+        var a = new JSZip(h),
+          b = a.file('5d-0-position.bin')
+        if (b) {
+          var b = b._data.getContent(),
+            b = new Float32Array(b.buffer)
+          // e = a.file(c.s + '-normal.bin')._data.getContent(),
+          // e = new Float32Array(e.buffer),
+          // f = a.file(c.s + '-color.bin')._data.getContent(),
+          // f = new Float32Array(f.buffer),
+          // a = a.file(c.s + '-uv.bin')._data.getContent(),
+          // a = new Float32Array(a.buffer)
+          console.log('worker.js-2', b.buffer)
+          saveJSON(b.buffer, '5d-0-position.json')
+        }
+      }
+    })
+
+    function saveJSON(data, filename) {
+      if (!data) {
+        alert('保存的数据为空');
+        return;
+      }
+      if (!filename)
+        filename = 'json.json'
+      if (typeof data === 'object') {
+        data = JSON.stringify(data, undefined, 4)
+      }
+      var blob = new Blob([data], { type: 'text/json' }),
+        e = document.createEvent('MouseEvents'),
+        a = document.createElement('a')
+      a.download = filename
+      a.href = window.URL.createObjectURL(blob)
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
+      e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+      a.dispatchEvent(e)
+    }
   </script>
 </body>
+
 </html>

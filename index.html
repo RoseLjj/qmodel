@@ -1,508 +1,518 @@
 ﻿<!DOCTYPE html>
 
 <head>
-    <title>QModel-BIM模型引擎</title>
-    <meta charset="utf-8">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
-    <link rel="stylesheet" href="static/css/view.css" />
-    <link href="static/css/bf.css" rel="stylesheet">
-    <!-- <script src="static/js/stats.min.js"></script>
+  <title>QModel-BIM模型引擎</title>
+  <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+  <link rel="stylesheet" href="static/css/view.css" />
+  <link href="static/css/bf.css" rel="stylesheet">
+  <!-- <script src="static/js/stats.min.js"></script>
     <script src="static/js/dat.gui.min.js"></script> -->
 </head>
 
 <body>
 
-    <div class="qm-loading">
-        <div class="qm-loading-gif"></div>
+  <div class="qm-loading">
+    <div class="qm-loading-gif"></div>
+  </div>
+  <div id="qrcode1" style="display: none;"></div>
+  <div id="progressDiv" class="qm-loading-progress">
+    <div>
+      <h3 id="progressInfo">解析模型</h3>
     </div>
-    <div id="qrcode1" style="display: none;"></div>
-    <div id="progressDiv" class="qm-loading-progress">
-        <div>
-            <h3 id="progressInfo">解析模型</h3>
-        </div>
-        <progress id="progressLoad" value="0" max="100"></progress>
-    </div>
-    <div id="viewcube"></div>
-    <div id="container" style="width:100%;height:100%;visibility: hidden;">
+    <progress id="progressLoad" value="0" max="100"></progress>
+  </div>
+  <div id="viewcube"></div>
+  <div id="container" style="width:100%;height:100%;visibility: hidden;">
 
-        <canvas id="canvasmain"></canvas>
-    </div>
-    <input type="range" min="0" max="100" value="0" class="slider" id="myRange" style="z-index: 9;background-color: coral;position: absolute; bottom: 20%;left:50%; transform: translate(-50%, -50%); width: 300px;color: black;display: none;">
-    <div id="demoSDK" style="display: none;position: absolute;bottom:0px;z-index: 9;">
+    <canvas id="canvasmain"></canvas>
+  </div>
+  <input type="range" min="0" max="100" value="0" class="slider" id="myRange"
+    style="z-index: 9;background-color: coral;position: absolute; bottom: 20%;left:50%; transform: translate(-50%, -50%); width: 300px;color: black;display: none;">
+  <div id="demoSDK" style="display: none;position: absolute;bottom:0px;z-index: 9;">
 
-        <button id="btnGetCameraJSON">获取相机</button>
-        <button id="btnSetCamera">设置相机</button>
-        <button id="btnGetAllMarksJSON">得到标记</button>
-        <button id="btnRemoveAllMark">移除标记</button>
-        <button id="btnAddMarkByJSON">设置标记</button>
+    <button id="btnGetCameraJSON">获取相机</button>
+    <button id="btnSetCamera">设置相机</button>
+    <button id="btnGetAllMarksJSON">得到标记</button>
+    <button id="btnRemoveAllMark">移除标记</button>
+    <button id="btnAddMarkByJSON">设置标记</button>
 
-        <button id="btnSetnatVisiblity">设置选中构件隐藏</button>
-        <button id="btnSetAllnaVisiblity">设置所有构件显示</button>
-        <button id="btnSetSelectColor">设置选中构件颜色</button>
-        <button id="btnSetTrans">设置选中构件半透明</button>
-        <button id="btnLookAtComp">聚集构件</button>
-    </div>
+    <button id="btnSetnatVisiblity">设置选中构件隐藏</button>
+    <button id="btnSetAllnaVisiblity">设置所有构件显示</button>
+    <button id="btnSetSelectColor">设置选中构件颜色</button>
+    <button id="btnSetTrans">设置选中构件半透明</button>
+    <button id="btnLookAtComp">聚集构件</button>
+  </div>
 
-    <div class="qm-toolbar qm-toolbar-bottom" title="主菜单">
-        <div class="qm-button qmd-home" title="Home"></div>
-        <div class="qm-button qmd-zoomrect" title="框选"></div>
-        <div class="qm-button qmd-measure" title="测量"></div>
-        <div class="qm-button qmd-lookat" title="炸开"></div>
-        <!-- <div class="qm-button qm-toolbar-button qmd-sectionbox" title="剖切">
+  <div class="qm-toolbar qm-toolbar-bottom" title="主菜单">
+    <div class="qm-button qmd-home" title="Home"></div>
+    <div class="qm-button qmd-zoomrect" title="框选"></div>
+    <div class="qm-button qmd-measure" title="测量"></div>
+    <div class="qm-button qmd-lookat" title="炸开"></div>
+    <!-- <div class="qm-button qm-toolbar-button qmd-sectionbox" title="剖切">
 			<div class="qm-sub-toolbar" title="剖切">
 				<div class="qm-button qmd-section-axial" title="轴向剖切"></div>
 				<div class="qm-button qmd-sectionbox1" title="剖切盒"></div>
 			</div>
 		</div> -->
-        <div class="qm-button qmd-section-axial" title="轴向剖切"></div>
-        <!-- <div class="qm-button qm-toolbar-button qmd-firstperson" title="漫游模式">
+    <div class="qm-button qmd-section-axial" title="轴向剖切"></div>
+    <!-- <div class="qm-button qm-toolbar-button qmd-firstperson" title="漫游模式">
             <div class="qm-sub-toolbar" title="漫游">
                 <div class="qm-button qmd-walk" title="漫游"></div>
                 <div class="qm-button qmd-circlelook" title="旋转观察"></div>
             </div>
         </div> -->
-        <div class="qm-button qmd-walk" title="漫游模式"></div>
-        <div class="qm-button qmd-dingwei" title="标记"></div>
-        <div class="qm-button qmd-properties" title="构件详情"></div>
-        <div class="qm-button qmd-plan" title="进度计划"></div>
-        <div class="qm-button qmd-view" title="相机书签"></div>
-        <!-- <div class="qm-button qmd-settings" title="设置"></div> -->
-        <div class="qm-button qmd-information" title="基本信息"></div>
-        <!-- <div class="qm-button qmd-maximize " title="全屏"></div> -->
+    <div class="qm-button qmd-walk" title="漫游模式"></div>
+    <div class="qm-button qmd-dingwei" title="标记"></div>
+    <div class="qm-button qmd-properties" title="构件详情"></div>
+    <div class="qm-button qmd-plan" title="进度计划"></div>
+    <div class="qm-button qmd-view" title="相机书签"></div>
+    <!-- <div class="qm-button qmd-settings" title="设置"></div> -->
+    <div class="qm-button qmd-information" title="基本信息"></div>
+    <!-- <div class="qm-button qmd-maximize " title="全屏"></div> -->
+  </div>
+
+  <div class="qm-toolbar qm-toolbar qm-tree-toolbar" title="目录树">
+    <div class="qm-button qmd-tree" title="目录树"></div>
+  </div>
+  <div id="divTree" class="qm-panel qm-has-title qm-sizable"
+    style="display: none;left: 10px; top: 10px; width: 220px; height: 416px;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">目录树</div>
+    <div class="qm-panel-body" style="padding-top: 12px;">
+      <div class="qm-panel-container qm-scroll-bar" id="divBfTree">
+
+      </div>
+    </div>
+    <!-- <div class="qm-resize"></div> -->
+  </div>
+
+
+  <!-- 以下是属性部分 -->
+  <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-panel"
+    style="display: none;right: 10px; top: 10px; width: 280px; height: 416px;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">构件详情</div>
+    <div class="qm-panel-body">
+      <div class="qm-panel-container qm-scroll-bar" id="divProperty">
+        <table class="qm-table" id="tableProperty">
+
+        </table>
+      </div>
     </div>
 
-    <div class="qm-toolbar qm-toolbar qm-tree-toolbar" title="目录树">
-        <div class="qm-button qmd-tree" title="目录树"></div>
-    </div>
-    <div id="divTree" class="qm-panel qm-has-title qm-sizable" style="display: none;left: 10px; top: 10px; width: 220px; height: 416px;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">目录树</div>
-        <div class="qm-panel-body" style="padding-top: 12px;">
-            <div class="qm-panel-container qm-scroll-bar" id="divBfTree">
+  </div>
 
-            </div>
+  <!-- 以下是计划部分 -->
+  <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-plan"
+    style="display: none;left: 1px; top: 10px; width: 380px; height: 600px;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">进度计划</div>
+    <div class="qm-button-mini" id="property-plan-add">新增任务</div>
+    <div class="qm-button-mini" id="property-plan-play">进度模拟</div>
+    <div class="qm-panel-body">
+      <div class="qm-panel-container qm-scroll-bar" id="divPlan">
+        <table class="qm-table" id="tablePlan">
+          <tr class="qm-group-content">
+            <td class="qm-key">计划</td>
+            <td class="qm-value">完成日期 </td>
+            <td style="width:120px;"> 操作 </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <!-- <div class="qm-resize"></div> -->
+  </div>
+  <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-plan-dialog"
+    style="display: none;left: 45%; top: 50px; width: 300px; height: 180px;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">新增计划</div>
+    <div class="qm-panel-body">
+
+      <table class="qm-table">
+        <tr class="qm-group-content">
+          <td class="qm-key">计划名称</td>
+          <td class="qm-value"><input id='inp1' type="text"></td>
+        </tr>
+        <tr class="qm-group-content">
+          <td class="qm-key">计划完成日期</td>
+          <td class="qm-value"><input id='inp2' type="date" defaultValue="2020/07/01"> </td>
+        </tr>
+      </table>
+      <div class="qm-button" id="property-plan-add-save">保存</div>
+    </div>
+    <!-- <div class="qm-resize"></div> -->
+  </div>
+  <!-- 以下是视点管理 -->
+  <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-view"
+    style="display: none;left: 1px; top: 10px; width: 380px; height: 600px;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">相机书签</div>
+    <div class="qm-button-mini" id="property-view-addpoint">插入标记</div>
+    <div class="qm-button-mini" id="property-view-add">新增书签</div>
+    <div class="qm-button-mini" id="property-view-openAll">打开书签</div>
+    <div class="qm-panel-body">
+      <div class="qm-panel-container qm-scroll-bar" id="divView">
+        <table class="qm-table" id="tableView">
+          <tr class="qm-group-content">
+            <td class="qm-key">名称</td>
+            <td class="qm-value">二维码
+            </td>
+            <td style="width:120px;">
+              操作
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-view-dialog"
+    style="display: none;left: 45%; top: 50px; width: 300px; height: 120px;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">新增书签</div>
+    <div class="qm-panel-body">
+      <table class="qm-table">
+        <tr class="qm-group-content">
+          <td class="qm-key">书签名称</td>
+          <td class="qm-value"><input id='inviewname' type="text"></td>
+        </tr>
+      </table>
+      <div class="qm-button" id="property-view-add-save">保存</div>
+    </div>
+    <!-- <div class="qm-resize"></div> -->
+  </div>
+  <!-- 以下是轴向剖切 -->
+  <div class="qm-panel qm-section-panel qm-has-title" id="axiDiv"
+    style="right: 10px; bottom: 120px; width: 160px; height: 130px; margin-bottom: 0px;display:none;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">轴向剖切</div>
+    <div class="qm-panel-body">
+      <div class="qm-panel-header"></div>
+      <div class="qm-panel-container qm-scroll-bar">
+        <div class="qm-section-plane-head">
+          <div class="qm-select qm-select-axial"><span class="qm-select-current">X轴</span>
+            <ul class="qm-select-list qm-scroll-bar">
+              <li class="qm-select-option my-axial" id="X">X轴</li>
+              <li class="qm-select-option my-axial" id="Y">Y轴</li>
+              <li class="qm-select-option my-axial" id="Z">Z轴</li>
+              <li class="qm-select-option my-axial" id="X1">-X轴</li>
+              <li class="qm-select-option my-axial" id="Y1">-Y轴</li>
+              <li class="qm-select-option my-axial" id="Z1">-Z轴</li>
+            </ul>
+          </div>
+          <div class="qm-button qmd-hide-slice" title="隐藏"></div>
         </div>
-        <!-- <div class="qm-resize"></div> -->
-    </div>
-
-
-    <!-- 以下是属性部分 -->
-    <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-panel" style="display: none;right: 10px; top: 10px; width: 280px; height: 416px;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">构件详情</div>
-        <div class="qm-panel-body">
-            <div class="qm-panel-container qm-scroll-bar" id="divProperty">
-                <table class="qm-table" id="tableProperty">
-
-                </table>
-            </div>
+        <div class="qm-section-range">
+          <div class="qm-range"><input id="axial-progress" type="range" step="1" min="0" max="100" value="50"
+              style="background: linear-gradient(to right, rgb(102, 102, 102) 0%, rgb(102, 102, 102) 50%, rgb(102, 102, 102) 50%, rgb(102, 102, 102) 100%);">
+          </div>
         </div>
-
+      </div>
     </div>
-
-    <!-- 以下是计划部分 -->
-    <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-plan" style="display: none;left: 1px; top: 10px; width: 380px; height: 600px;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">进度计划</div>
-        <div class="qm-button-mini" id="property-plan-add">新增任务</div>
-        <div class="qm-button-mini" id="property-plan-play">进度模拟</div>
-        <div class="qm-panel-body">
-            <div class="qm-panel-container qm-scroll-bar" id="divPlan">
-                <table class="qm-table" id="tablePlan">
-                    <tr class="qm-group-content">
-                        <td class="qm-key">计划</td>
-                        <td class="qm-value">完成日期 </td>
-                        <td style="width:120px;"> 操作 </td>
-                    </tr>
-                </table>
-            </div>
+  </div>
+  <!-- 以下是基本信息 -->
+  <div class="qm-panel qm-has-title" id="modalInfoDiv"
+    style="left: 610px; top: 671px; width: 300px; height: 210px; transform: translate(-50%, -50%);;display:none;">
+    <div class="qm-close"></div>
+    <div class="qm-title" style="cursor: move; user-select: none;">基本信息</div>
+    <div class="qm-panel-body">
+      <div class="qm-panel-header"></div>
+      <div class="qm-panel-container qm-scroll-bar">
+        <div class="qm-info">
+          <ul class="qm-info-list">
+            <li>构件数量：<span class="qm-info-value" id="infoCompCount">26669</span></li>
+            <li>三角面数量：<span class="qm-info-value" id="infoAngleCount">6702792</span></li>
+            <li>顶点数量：<span class="qm-info-value" id="infoPointCount">20108376</span></li>
+          </ul>
         </div>
-        <!-- <div class="qm-resize"></div> -->
+      </div>
     </div>
-    <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-plan-dialog" style="display: none;left: 45%; top: 50px; width: 300px; height: 180px;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">新增计划</div>
-        <div class="qm-panel-body">
+  </div>
 
-            <table class="qm-table">
-                <tr class="qm-group-content">
-                    <td class="qm-key">计划名称</td>
-                    <td class="qm-value"><input id='inp1' type="text"></td>
-                </tr>
-                <tr class="qm-group-content">
-                    <td class="qm-key">计划完成日期</td>
-                    <td class="qm-value"><input id='inp2' type="date" defaultValue="2020/07/01"> </td>
-                </tr>
-            </table>
-            <div class="qm-button" id="property-plan-add-save">保存</div>
-        </div>
-        <!-- <div class="qm-resize"></div> -->
-    </div>
-    <!-- 以下是视点管理 -->
-    <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-view" style="display: none;left: 1px; top: 10px; width: 380px; height: 600px;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">相机书签</div>
-        <div class="qm-button-mini" id="property-view-addpoint">插入标记</div>
-        <div class="qm-button-mini" id="property-view-add">新增书签</div>
-        <div class="qm-button-mini" id="property-view-openAll">打开书签</div>
-        <div class="qm-panel-body">
-            <div class="qm-panel-container qm-scroll-bar" id="divView">
-                <table class="qm-table" id="tableView">
-                    <tr class="qm-group-content">
-                        <td class="qm-key">名称</td>
-                        <td class="qm-value">二维码
-                        </td>
-                        <td style="width:120px;">
-                            操作
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-    </div>
-    <div class="qm-panel qm-has-title qm-sizable property-panel" id="property-view-dialog" style="display: none;left: 45%; top: 50px; width: 300px; height: 120px;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">新增书签</div>
-        <div class="qm-panel-body">
-            <table class="qm-table">
-                <tr class="qm-group-content">
-                    <td class="qm-key">书签名称</td>
-                    <td class="qm-value"><input id='inviewname' type="text"></td>
-                </tr>
-            </table>
-            <div class="qm-button" id="property-view-add-save">保存</div>
-        </div>
-        <!-- <div class="qm-resize"></div> -->
-    </div>
-    <!-- 以下是轴向剖切 -->
-    <div class="qm-panel qm-section-panel qm-has-title" id="axiDiv" style="right: 10px; bottom: 120px; width: 160px; height: 130px; margin-bottom: 0px;display:none;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">轴向剖切</div>
-        <div class="qm-panel-body">
-            <div class="qm-panel-header"></div>
-            <div class="qm-panel-container qm-scroll-bar">
-                <div class="qm-section-plane-head">
-                    <div class="qm-select qm-select-axial"><span class="qm-select-current">X轴</span>
-                        <ul class="qm-select-list qm-scroll-bar">
-                            <li class="qm-select-option my-axial" id="X">X轴</li>
-                            <li class="qm-select-option my-axial" id="Y">Y轴</li>
-                            <li class="qm-select-option my-axial" id="Z">Z轴</li>
-                            <li class="qm-select-option my-axial" id="X1">-X轴</li>
-                            <li class="qm-select-option my-axial" id="Y1">-Y轴</li>
-                            <li class="qm-select-option my-axial" id="Z1">-Z轴</li>
-                        </ul>
-                    </div>
-                    <div class="qm-button qmd-hide-slice" title="隐藏"></div>
-                </div>
-                <div class="qm-section-range">
-                    <div class="qm-range"><input id="axial-progress" type="range" step="1" min="0" max="100" value="50" style="background: linear-gradient(to right, rgb(102, 102, 102) 0%, rgb(102, 102, 102) 50%, rgb(102, 102, 102) 50%, rgb(102, 102, 102) 100%);">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- 以下是基本信息 -->
-    <div class="qm-panel qm-has-title" id="modalInfoDiv" style="left: 610px; top: 671px; width: 300px; height: 210px; transform: translate(-50%, -50%);;display:none;">
-        <div class="qm-close"></div>
-        <div class="qm-title" style="cursor: move; user-select: none;">基本信息</div>
-        <div class="qm-panel-body">
-            <div class="qm-panel-header"></div>
-            <div class="qm-panel-container qm-scroll-bar">
-                <div class="qm-info">
-                    <ul class="qm-info-list">
-                        <li>构件数量：<span class="qm-info-value" id="infoCompCount">26669</span></li>
-                        <li>三角面数量：<span class="qm-info-value" id="infoAngleCount">6702792</span></li>
-                        <li>顶点数量：<span class="qm-info-value" id="infoPointCount">20108376</span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="static/js/mousetrap.min.js"></script>
-    <script src="static/js/qmodel.core.min.js"></script>
-    <script src="static/js/octree.min.js"></script>
+  <script src="static/js/mousetrap.min.js"></script>
+  <script src="static/js/qmodel.core.min.js"></script>
+  <script src="static/js/octree.min.js"></script>
 
 
-    <script src="static/js/net.min.js"></script>
-    <script src="static/js/qmodel.min.js"></script>
+  <script src="static/js/net.min.js"></script>
+  <script src="static/js/qmodel.min.js"></script>
 
-    <script src="static/js/stats.min.js"></script>
+  <script src="static/js/stats.min.js"></script>
 
-    <script src="static/js/jquery-3.2.1.min.js"></script>
-    <script src="static/js/jquery.cookie.js"></script>
-    <!-- 压缩文件解压插件 -->
-    <script src="static/js/jszip.min.js"></script>
-    <script src="static/js/jszip-utils.js"></script>
-    <!-- // 二维码生成插件 -->
-    <script src="static/js/jquery.qrcode.min.js"></script>
-    <script src="static/js/app.min.js"></script>
-    <!-- <script src="static/js/html2canvas.min.js"></script> -->
+  <script src="static/js/jquery-3.2.1.min.js"></script>
+  <script src="static/js/jquery.cookie.js"></script>
+  <!-- 压缩文件解压插件 -->
+  <script src="static/js/jszip.min.js"></script>
+  <script src="static/js/jszip-utils.js"></script>
+  <!-- // 二维码生成插件 -->
+  <script src="static/js/jquery.qrcode.min.js"></script>
+  <script src="static/js/app.min.js"></script>
+  <!-- <script src="static/js/html2canvas.min.js"></script> -->
 
 </body>
 <script>
-    var qmodel = null;
-    var loaded_callback = null;
+  var qmodel = null;
+  var loaded_callback = null;
 
-    window.onload = function() {
-        if (window.parent && window.parent.frame_token) {
-            localStorage.setItem(ID_TOKEN, window.parent.frame_token);
-            localStorage.setItem(USER_ID, window.parent.frame_user);
-        }
-        loadPage();
+  window.onload = function () {
+    if (window.parent && window.parent.frame_token) {
+      localStorage.setItem(ID_TOKEN, window.parent.frame_token);
+      localStorage.setItem(USER_ID, window.parent.frame_user);
+    }
+    loadPage();
 
-        window.addEventListener("message", function(event) {
-            var data = event.data;
-            console.log('收到vue的数据：', JSON.stringify(data));
-            switch (data.cmd) {
-                case 'get_camera_json':
-                    window.parent.postMessage({
-                        cmd: data.cmd,
-                        camerajson: qmodel.get_camera_json()
-                    }, '*');
-                    break;
+    window.addEventListener("message", function (event) {
+      var data = event.data;
+      console.log('收到vue的数据：', JSON.stringify(data));
+      switch (data.cmd) {
+        case 'get_camera_json':
+          window.parent.postMessage({
+            cmd: data.cmd,
+            camerajson: qmodel.get_camera_json()
+          }, '*');
+          break;
 
-                case 'set_camera_json':
-                    qmodel.set_camera_json(data.camerajson);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'set_camera_json':
+          qmodel.set_camera_json(data.camerajson);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'get_all_marks':
-                    window.parent.postMessage({
-                        cmd: data.cmd,
-                        markjson: qmodel.get_all_marks(),
-                    }, '*');
-                    break;
+        case 'get_all_marks':
+          window.parent.postMessage({
+            cmd: data.cmd,
+            markjson: qmodel.get_all_marks(),
+          }, '*');
+          break;
 
-                case 'get_selection_ids':
-                    window.parent.postMessage({
-                        cmd: data.cmd,
-                        ids: qmodel.get_selection_ids(),
-                    }, '*');
-                    break;
+        case 'get_selection_ids':
+          window.parent.postMessage({
+            cmd: data.cmd,
+            ids: qmodel.get_selection_ids(),
+          }, '*');
+          break;
 
-                case 'reset_marks':
-                    qmodel.reset_marks(data.markjson);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'reset_marks':
+          qmodel.reset_marks(data.markjson);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'set_comps_color':
-                    var ids = data.ids ? data.ids : qmodel.get_selection_ids();
-                    qmodel.set_comps_color(ids, data.color);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'set_comps_color':
+          var ids = data.ids ? data.ids : qmodel.get_selection_ids();
+          qmodel.set_comps_color(ids, data.color);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'reset_comps_color':
-                    var ids = data.ids ? data.ids : qmodel.get_selection_ids();
-                    qmodel.set_comps_color(ids, null);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'reset_comps_color':
+          var ids = data.ids ? data.ids : qmodel.get_selection_ids();
+          qmodel.set_comps_color(ids, null);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'set_comps_transparency':
-                    var ids = data.ids ? data.ids : qmodel.get_selection_ids();
-                    qmodel.set_comps_transparency(ids, data.value);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'set_comps_transparency':
+          var ids = data.ids ? data.ids : qmodel.get_selection_ids();
+          qmodel.set_comps_transparency(ids, data.value);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'remove_all_marks':
-                    qmodel.remove_all_marks();
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'remove_all_marks':
+          qmodel.remove_all_marks();
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'set_comps_visiblity':
-                    var ids = data.ids ? data.ids : qmodel.get_selection_ids();
-                    qmodel.set_comps_visiblity(ids, data.visibility);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
+        case 'set_comps_visiblity':
+          var ids = data.ids ? data.ids : qmodel.get_selection_ids();
+          qmodel.set_comps_visiblity(ids, data.visibility);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
 
-                case 'show_all_comps':
-                    qmodel.show_all_comps(data.visibility);
-                    window.parent.postMessage({
-                        cmd: data.cmd
-                    }, '*');
-                    break;
-            };
+        case 'show_all_comps':
+          qmodel.show_all_comps(data.visibility);
+          window.parent.postMessage({
+            cmd: data.cmd
+          }, '*');
+          break;
+      };
+    });
+  }
+
+
+  function onframe_loaded(bindCallback, getmodels) {
+    var net = new NetHandle();
+    net.clear_TOKEN();
+    var models = [];
+    net.getToken().then(e => {
+      net.getModels().then(e => {
+        console.log(e);
+        e.forEach(element => {
+          models.push(element);
         });
-    }
+        getmodels(models);
+      });
 
+    });
+    loaded_callback = bindCallback;
+  }
 
-    function onframe_loaded(bindCallback, getmodels) {
-        var net = new NetHandle();
-        net.clear_TOKEN();
-        var models = [];
-        net.getToken().then(e => {
-            net.getModels().then(e => {
-                console.log(e);
-                e.forEach(element => {
-                    models.push(element);
-                });
-                getmodels(models);
-            });
+  function onframe_select_callback(f) {
+    qmodel.set_select_callback(f);
+  }
 
-        });
-        loaded_callback = bindCallback;
-    }
+  function onframe_mark_callback(f) {
+    qmodel.set_mark_click_callback(f);
+  }
 
-    function onframe_select_callback(f) {
-        qmodel.set_select_callback(f);
-    }
+  function loadPage() {
+    var model = getUrlParam('model');
+    var mergegeo = getUrlParam('mgr');
 
-    function onframe_mark_callback(f) {
-        qmodel.set_mark_click_callback(f);
-    }
+    // var version = getUrlParam('v');
+    //if (!model) return;
+    model = "给排水-A座塔楼.rvt";
+    // model = "结构-A座塔楼.rvt";
+    // model = "南京长航-给排水2018.rvt";
+    // model = "1栋住宅全专业.rvt";
+    // model = "5号楼.rvt";
+    // model = "aaaa_1600399859596.rvt";
+    if (model.indexOf('.rvt') > 0) // 是rvt文件
+      _type = 0;
+    else // 非rvt文件
+      _type = 1;
 
-    function loadPage() {
-        var model = getUrlParam('model');
-        var mergegeo = getUrlParam('mgr');
+    var edge = getUrlParam('edge');
+    if (!edge)
+      edge = '0';
+    var qmParams = new QmParams();
+    var mark = getUrlParam('mark');
+    var lookat = getUrlParam('lookat');
+    var oi = getUrlParam('oi');
+    qmParams.backgroundColor = getUrlParam('color');
+    // qmParams.backgroundColor = '16777215';
+    qmParams._0x9C = edge == "1";
+    qmParams._012 = oi == "1";
+    qmParams.pageWidth = window.innerWidth;
+    qmParams.merge = mergegeo == "1";
+    qmParams.pageHeight = window.innerHeight;
+    qmParams.type = _type;
 
-        // var version = getUrlParam('v');
-        //if (!model) return;
-        // model = "给排水-A座塔楼.rvt";
-        // model = "结构-A座塔楼.rvt";
-        // model = "南京长航-给排水2018.rvt";
-        // model = "1栋住宅全专业.rvt";
-        // model = "5号楼.rvt";
-        model = "aaaa_1600399859596.rvt";
-        if (model.indexOf('.rvt') > 0) // 是rvt文件
-            _type = 0;
-        else // 非rvt文件
-            _type = 1;
+    //todo 网络处理 获取token
+    GetNetHandle().then(
+      e => {
+        GetQModel(model, qmParams).then(e => {
+          qmodel = e;
+          container.style.visibility = 'visible';
+          initDemo();
+          createQrCode($('#qrcode1'), window.location.href, 150, 150);
+          if (mark)
+            qmodel.goto_view(mark);
+          if (loaded_callback)
+            loaded_callback();
+          if (lookat) {
+            qmodel.lookat_comp(lookat);
+          }
+        })
+      }
+    );
+    //   } else {
+    //       window.location = 'login/login.html?back=' + window.location;
+    //   }
 
-        var edge = getUrlParam('edge');
-        if (!edge)
-            edge = '0';
-        var qmParams = new QmParams();
-        var mark = getUrlParam('mark');
-        var lookat = getUrlParam('lookat');
-        var oi = getUrlParam('oi');
-        qmParams.backgroundColor = getUrlParam('color');
-        // qmParams.backgroundColor = '16777215';
-        qmParams._0x9C = edge == "1";
-        qmParams._012 = oi == "1";
-        qmParams.pageWidth = window.innerWidth;
-        qmParams.merge = mergegeo == "1";
-        qmParams.pageHeight = window.innerHeight;
-        qmParams.type = _type;
-        
-        //todo 网络处理 获取token
-        GetNetHandle().then(
-            e => {
-                GetQModel(model, qmParams).then(e => {
-                    qmodel = e;
-                    container.style.visibility = 'visible';
-                    initDemo();
-                    createQrCode($('#qrcode1'), window.location.href, 150, 150);
-                    if (mark)
-                        qmodel.goto_view(mark);
-                    if (loaded_callback)
-                        loaded_callback();
-                    if (lookat) {
-                        qmodel.lookat_comp(lookat);
-                    }
-                })
-            }
-        );
-        //   } else {
-        //       window.location = 'login/login.html?back=' + window.location;
-        //   }
+  }
 
-    }
+  function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg); //匹配目标参数
+    if (r != null) return unescape(decodeURI(r[2]));
+    return null; //返回参数值
+  }
 
-    function getUrlParam(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-        var r = window.location.search.substr(1).match(reg); //匹配目标参数
-        if (r != null) return unescape(decodeURI(r[2]));
-        return null; //返回参数值
-    }
-
-    var testJson = null;
-    var testJson2 = null;
+  var testJson = null;
+  var testJson2 = null;
 
 
 
 
-    function initDemo() {
-        //点击示例：选中构件的ID：
-        qmodel.set_select_callback(function(e) {
-            console.log('当前点击构件ID' + e);
-        });
-        //肖标点击示例：选中构件的ID：
-        qmodel.set_mark_click_callback(function(uniqueid) {
-            alert('当前点击标记的构件Id：' + uniqueid);
-        });
-        var fileid = qmodel.get_current_fileId();
-        console.log('当前模型文件ID' + fileid);
-        document.getElementById("btnGetCameraJSON").onclick = function() {
-            testJson = qmodel.get_camera_json();
-            console.log(testJson);
-            alert(testJson);
-        };
-        document.getElementById("btnSetCamera").onclick = function() {
-            var json = testJson;
-            if (!json) {
-                alert('您可以先点击获取相机，我会把相机序列化为JSON缓存下来用于测试。');
-            }
-            qmodel.set_camera_json(json);
-        };
-        document.getElementById("btnGetAllMarksJSON").onclick = function() {
-            testJson2 = qmodel.get_all_marks();
-            console.log(testJson2);
-            alert(testJson2);
-        };
-        document.getElementById("btnAddMarkByJSON").onclick = function() {
-            var json = testJson2;
-            if (!json) {
-                alert('您可以先点击得到标记，我会把标记序列化为JSON缓存下来用于测试。');
-            }
-            qmodel.reset_marks(json);
-        };
-
-        document.getElementById("btnSetSelectColor").onclick = function() {
-            var ids = qmodel.get_selection_ids();
-            alert('当前选择的构件Id：' + ids);
-            qmodel.set_comps_color(ids, 0xff0000);
-            //如果要还原颜色，颜色传入null,qmodel._0xC6(ids, null);
-        };
-        document.getElementById("btnSetTrans").onclick = function() {
-            var ids = qmodel.get_selection_ids();
-            alert('当前选择的构件Id：' + ids);
-            qmodel.set_comps_transparency(ids, 0.5);
-        };
-        document.getElementById("btnRemoveAllMark").onclick = function() {
-            qmodel.remove_all_marks()
-        };
-        document.getElementById("btnSetnatVisiblity").onclick = function() {
-            var ids = qmodel.get_selection_ids();
-            alert('当前选择的构件Id：' + ids);
-            qmodel.set_comps_visiblity(ids, false)
-        };
-        document.getElementById("btnSetAllnaVisiblity").onclick = function() {
-            qmodel.show_all_comps(true);
-        };
-        document.getElementById("btnLookAtComp").onclick = function() {
-            var ids = qmodel.get_selection_ids();
-            qmodel.lookat_comp(ids[0]);
-        };
-
-
+  function initDemo() {
+    //点击示例：选中构件的ID：
+    qmodel.set_select_callback(function (e) {
+      console.log('当前点击构件ID' + e);
+    });
+    //肖标点击示例：选中构件的ID：
+    qmodel.set_mark_click_callback(function (uniqueid) {
+      alert('当前点击标记的构件Id：' + uniqueid);
+    });
+    var fileid = qmodel.get_current_fileId();
+    console.log('当前模型文件ID' + fileid);
+    document.getElementById("btnGetCameraJSON").onclick = function () {
+      testJson = qmodel.get_camera_json();
+      console.log(testJson);
+      alert(testJson);
     };
+    document.getElementById("btnSetCamera").onclick = function () {
+      var json = testJson;
+      if (!json) {
+        alert('您可以先点击获取相机，我会把相机序列化为JSON缓存下来用于测试。');
+      }
+      qmodel.set_camera_json(json);
+    };
+    document.getElementById("btnGetAllMarksJSON").onclick = function () {
+      testJson2 = qmodel.get_all_marks();
+      console.log(testJson2);
+      alert(testJson2);
+    };
+    document.getElementById("btnAddMarkByJSON").onclick = function () {
+      var json = testJson2;
+      if (!json) {
+        alert('您可以先点击得到标记，我会把标记序列化为JSON缓存下来用于测试。');
+      }
+      qmodel.reset_marks(json);
+    };
+
+    document.getElementById("btnSetSelectColor").onclick = function () {
+      var ids = qmodel.get_selection_ids();
+      alert('当前选择的构件Id：' + ids);
+      qmodel.set_comps_color(ids, 0xff0000);
+      //如果要还原颜色，颜色传入null,qmodel._0xC6(ids, null);
+    };
+    document.getElementById("btnSetTrans").onclick = function () {
+      var ids = qmodel.get_selection_ids();
+      alert('当前选择的构件Id：' + ids);
+      qmodel.set_comps_transparency(ids, 0.5);
+    };
+    document.getElementById("btnRemoveAllMark").onclick = function () {
+      qmodel.remove_all_marks()
+    };
+    document.getElementById("btnSetnatVisiblity").onclick = function () {
+      var ids = qmodel.get_selection_ids();
+      alert('当前选择的构件Id：' + ids);
+      qmodel.set_comps_visiblity(ids, false)
+    };
+    document.getElementById("btnSetAllnaVisiblity").onclick = function () {
+      qmodel.show_all_comps(true);
+    };
+    document.getElementById("btnLookAtComp").onclick = function () {
+      var ids = qmodel.get_selection_ids();
+      qmodel.lookat_comp(ids[0]);
+    };
+
+
+  };
 </script>
 
 </html>
